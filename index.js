@@ -16,6 +16,7 @@ function TemperatureHumidityAsyncAccessory(log, config) {
   this.name = config.name || "Temperature Humidity Sensor";
   this.manufacturer = config.manufacturer || "N/A";
   this.version = config.version || pjson.version;
+  this.offsets = config.offsets || { temperature: 0.0, humidity: 0.0 };
   this.senderId = config.senderId || 1234;
   this.senderId += "";
   
@@ -73,7 +74,20 @@ TemperatureHumidityAsyncAccessory.prototype.getTemperatureAndHumidity = function
   }, function(err, res, body) {
     if (!err && body) {
       try {
-        callback(null, JSON.parse(body));
+        var json = JSON.parse(body);
+        if (json && json.temperature && json.humidity) {
+          if (this.offsets) {
+            if (this.offsets.temperature && !isNaN(this.offsets.temperature)) {
+              json.temperature += this.offsets.temperature;
+            }
+            if (this.offsets.humidity && !isNaN(this.offsets.humidity)) {
+              json.humidity += this.offsets.humidity;
+            }
+          }
+          callback(null, json);
+        } else {
+          callback("invalid response");
+        }
       } catch (e) {
         console.error(e);
         callback(null);
@@ -100,7 +114,7 @@ TemperatureHumidityAsyncAccessory.prototype.getServices = function () {
     this.temperatureService.getCharacteristic(Characteristic.CurrentTemperature)
       .on('get', this.getTemperature.bind(this));
     services.push(this.temperatureService);
-    
+
     this.humidityService = new Service.HumiditySensor('Humidity');
     this.humidityService.getCharacteristic(Characteristic.CurrentRelativeHumidity)
       .on('get', this.getHumidity.bind(this));

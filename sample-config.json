@@ -12,7 +12,11 @@
         "accessory": "TemperatureHumidityAsyncSensor",
         "name": "Office",
         "port": 8554,
-        "senderId": 1424479
+        "senderId": 1424479,
+        "offsets": {
+            "temperature": 2.5,
+            "humidity": 0.0
+        }
       }
     ]
 }
