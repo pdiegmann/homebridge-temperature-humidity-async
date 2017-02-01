@@ -2,6 +2,7 @@ var Service, Characteristic;
 var pjson = require('./package.json');
 var config = require('./sample-config.json');
 var path = require('path');
+var request = require('request');
 
 module.exports = function (homebridge) {
     Service = homebridge.hap.Service;
