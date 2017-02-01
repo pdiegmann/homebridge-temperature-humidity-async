@@ -16,6 +16,7 @@ function TemperatureHumidityAsyncAccessory(log, config) {
   this.manufacturer = config.manufacturer || "N/A";
   this.version = config.version || pjson.version;
   this.senderId = config.senderId || 1234;
+  this.senderId += "";
   
   this.receptionServer = config.receptionServer || { protocol: "http", host: "127.0.0.1", port: 8554 }
 
