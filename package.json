@@ -1,0 +1,33 @@
+{
+  "name": "homebridge-temperature-humidity-async",
+  "version": "0.0.1",
+  "description": "Homebridge Plugin for Async Temperature and Humidity handling",
+  "main": "index.js",
+  "engines": {
+    "node": "^6.0.0",
+    "homebridge": "^0.4.0"
+  },
+  "dependencies": {
+    "request": "^2.69.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/pdiegmann/homebridge-temperature-humidity-async.git"
+  },
+  "keywords": [
+    "homebridge-plugin",
+    "homebridge",
+    "temperature",
+    "humidity",
+    "meteo",
+    "metestation",
+    "async",
+    "cache"
+  ],
+  "author": "pdiegmann",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/pdiegmann/homebridge-temperature-humidity-async/issues"
+  },
+  "homepage": "https://github.com/pdiegmann/homebridge-temperature-humidity-async#readme"
+}
