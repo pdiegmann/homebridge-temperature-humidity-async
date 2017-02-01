@@ -71,9 +71,13 @@ TemperatureHumidityAsyncAccessory.prototype.getTemperatureAndHumidity = function
       url: this.receptionServer.protocol + '://' + this.receptionServer.host + ':' + this.receptionServer.port + '/get/' + this.senderId,
       method: 'GET'
   }, function(err, res, body) {
-    if (!err) {
-      var jsonResponse = JSON.parse(body);
-      callback(null, json);
+    if (!err && body) {
+      try {
+        callback(null, JSON.parse(body));
+      } catch (e) {
+        console.error(e);
+        callback(null);
+      }
     } else {
       console.log(err);
       callback(null);
