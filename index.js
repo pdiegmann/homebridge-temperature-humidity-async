@@ -99,6 +99,8 @@ TemperatureHumidityAsyncAccessory.prototype.getServices = function () {
     this.temperatureService = new Service.TemperatureSensor('Temperature');
     this.temperatureService.getCharacteristic(Characteristic.CurrentTemperature)
       .on('get', this.getTemperature.bind(this));
+    services.push(this.temperatureService);
+    
     this.humidityService = new Service.HumiditySensor('Humidity');
     this.humidityService.getCharacteristic(Characteristic.CurrentRelativeHumidity)
       .on('get', this.getHumidity.bind(this));
