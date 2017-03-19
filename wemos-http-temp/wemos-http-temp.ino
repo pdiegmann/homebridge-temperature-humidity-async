@@ -1,4 +1,4 @@
-#include <FS.h> 
+#include <FS.h>
 #include <ArduinoJson.h>
 #include <ESP8266WiFi.h>          //ESP8266 Core WiFi Library (you most likely already have this in your sketch)
 #include <WEMOS_SHT3X.h>
@@ -26,7 +26,7 @@ void saveConfigCallback () {
 
 void setup() {
   Serial.begin(115200);
-  
+
   String strChipId = String(ESP.getChipId());
   strChipId.toCharArray(senderId, strChipId.length());
 
@@ -68,15 +68,15 @@ void setup() {
   //wifiManager.resetSettings();
   wifiManager.setAPCallback(configModeCallback);
   wifiManager.setSaveConfigCallback(saveConfigCallback);
-  
+
   WiFiManagerParameter dataReceiverHostParameter("DataReceiverHost", "Data Receiver URL", dataReceiverHost, 40);
   wifiManager.addParameter(&dataReceiverHostParameter);
   WiFiManagerParameter senderIdParameter("SenderId", "Sender ID", senderId, 40);
   wifiManager.addParameter(&senderIdParameter);
-  
+
   // first parameter is name of access point, second is the password
   //wifiManager.setDebugOutput(false);
-  if(!wifiManager.autoConnect()) {
+  if (!wifiManager.autoConnect()) {
     Serial.println("failed to connect and hit timeout");
     //reset and try again, or maybe put it to deep sleep
     delay(1000);
@@ -110,6 +110,20 @@ void setup() {
   Serial.println("WiFi connected");
 
   Serial.println(WiFi.localIP());
+  byte mac[6];
+  WiFi.macAddress(mac);
+  Serial.print("MAC: ");
+  Serial.print(mac[5],HEX);
+  Serial.print(":");
+  Serial.print(mac[4],HEX);
+  Serial.print(":");
+  Serial.print(mac[3],HEX);
+  Serial.print(":");
+  Serial.print(mac[2],HEX);
+  Serial.print(":");
+  Serial.print(mac[1],HEX);
+  Serial.print(":");
+  Serial.println(mac[0],HEX);
 }
 
 void loop() {
@@ -121,14 +135,14 @@ void loop() {
   Serial.print("Relative Humidity : ");
   Serial.println(sht30.humidity);
   Serial.println();
-  
+
   StaticJsonBuffer<500> jsonBuffer;
   JsonObject& json = jsonBuffer.createObject();
   json["temperature"] = sht30.cTemp;
   json["humidity"] = sht30.humidity;
   json["sender"] = senderId;
   writeJSON(json);
-        
+
   Serial.println("Sleeping now");
   ESP.deepSleep(60 * 1000000);
   delay(100);
@@ -138,17 +152,27 @@ void writeJSON(JsonObject& json) {
   HTTPClient http;
   http.begin(dataReceiverHost);
   http.addHeader("Content-Type", "application/json");
-  
+
+  Serial.print("Posting to ");
+  Serial.print(dataReceiverHost);
+  Serial.println("...");
   String out;
   json.printTo(out);
   int httpCode = http.POST(out);
   String payload = http.getString();
+  Serial.println("Payload: ");
+  Serial.println(out);
   http.end();
 
   Serial.print("Response Code: ");
-  Serial.println(httpCode);
-  Serial.println(payload);
-  
+  if (httpCode <= 0) {
+    Serial.print("HTTP failed: ");
+    Serial.println(http.errorToString(httpCode).c_str());
+  } else {
+    Serial.println(httpCode);
+    Serial.println(payload);
+  }
+
   Serial.println();
   Serial.println("closing connection");
 }

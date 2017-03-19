@@ -2,7 +2,7 @@
 var http = require('http');
 var url = require('url') ;
 
-var port = 8080; 
+var port = 8080;
 
 process.argv.forEach(function (val, index, array) {
   if (val.indexOf("port=") == 0) {
@@ -15,9 +15,11 @@ function handleRequest(request, response){
     console.log("request to: " + request.url);
     request.on('data', function (data) {
         var json = JSON.parse(data);
-        console.log(json.temperature);
-        console.log(json.humidity);
-        console.log(json.sender);
+        if (json) {
+          console.log(json.temperature);
+          console.log(json.humidity);
+          console.log(json.sender);
+        }
         response.end("OK");
     });
 }
@@ -46,7 +48,7 @@ var server = http.createServer(function(request, response) {
 				var splittedUrl = request.url.split("/get/");
 				response.end(JSON.stringify(data[splittedUrl[splittedUrl.length - 1]]));
 			} else {
-				response.statusCode = 400;
+				response.end(JSON.stringify(data));
 			}
 		} else if (request.method === "POST" || request.method === "PUT") {
 			response.statusCode = 200;
